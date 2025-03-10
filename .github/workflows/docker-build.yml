@@ -42,3 +42,12 @@ jobs:
             docker buildx build --platform ${{ matrix.platform }} --build-arg VERSION=`cat version.txt` --build-arg BUILD_DATE=`date -u +%Y-%m-%dT%H:%M:%SZ` -f docker/Dockerfile -t "$tag" -o type=docker .
             set +x
             docker images | grep "$tag"
+            docker images | grep "$tag" |awk "{print$1}" |xargs docker save -o opensearch-benchmark-images.tar
+      
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          generate_release_notes: true
+          files: opensearch-benchmark-images.tar             
